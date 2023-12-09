@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import './App.css'
+import TodoForm from './components/todoForm/TodoForm'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      <h1>Hi</h1>
+      <TodoForm/>
     </>
   )
 }
