@@ -1,6 +1,5 @@
 import React from 'react'
 import { useState, useReducer } from 'react';
-import Todo from '../todo/Todo';
 
 
 
@@ -28,16 +27,21 @@ export default function TodoForm() {
     }
 
     const addItem = () => {
-        
+
         const item = {
             id: Math.floor(Math.random() * 1000),
             value: state.value
         };
 
-        setItems(oldList => [...oldList, item]);
+        setItems(oldList => [ item, ...oldList]);
         dispatch({ type: ACTION.VALUE, payload: '' });
 
         console.log(items);
+    }
+
+    const deleteItem = (id) => {
+        const newArray = items.filter(item => item.id !== id);
+        setItems(newArray);
     }
 
     return (
@@ -49,9 +53,12 @@ export default function TodoForm() {
             <button onClick={() => addItem()} type='submit' className='todo-btn'>Add Task</button>
 
             <ul>
-                <li>task items</li>
-                <li>task items</li>
-                <li>task items</li>
+                {items.map(item => {
+                    return(
+                <li key={item.id}>{item.value} <button onClick={() => deleteItem(item.id)}>Delete</button> </li>
+                    )
+                })}
+                
             </ul>
         </form>
 
