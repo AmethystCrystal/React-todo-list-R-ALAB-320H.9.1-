@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState, useReducer } from 'react';
+import { useReducer } from 'react';
 
 
 
@@ -7,6 +7,13 @@ const reducer = (state, action) => {
     switch (action.type) {
         case 'value':
             return { ...state, value: action.payload };
+        case 'toggle_completion':
+            return {...state,items: state.items.map(item =>
+                    item.id === action.payload ? { ...item, completed: !item.completed } : item)};
+        case 'delete':
+            return {...state, items: action.payload};
+        case 'add_item':
+            return {...state, items: [action.payload,...state.items ] }
         default:
             throw new Error();
 
@@ -16,6 +23,7 @@ const reducer = (state, action) => {
 const ACTION = {
     VALUE: 'value',
     TOGGLE_COMPLETION: 'toggle_completion',
+    ADD_ITEM: 'add_item',
 }
 
 const predefinedItems = [
@@ -34,20 +42,20 @@ export default function TodoForm() {
 
     const addItem = () => {
 
-        const item = {
+        const newItem = {
             id: Math.floor(Math.random() * 1000),
             value: state.value,
             completed: false,
         };
 
         dispatch({ type: ACTION.VALUE, payload: '' });
-        dispatch({ type: ACTION.TOGGLE_COMPLETION, payload: item.id });
+        dispatch({ type: ACTION.ADD_ITEM, payload: newItem });
     }
 
     const deleteItem = (id) => {
         const newArray = state.items.filter(item => item.id !== id);
         dispatch({ type: ACTION.VALUE, payload: '' });
-        dispatch({ type: ACTION.TOGGLE_COMPLETION, payload: id });
+        dispatch({ type: 'delete', payload: newArray });
     }
 
     const toggleCompletion = (id) => {
@@ -69,7 +77,7 @@ export default function TodoForm() {
                         <li key={item.id}>
                             <input type='checkbox' checked={item.completed} onChange={() => toggleCompletion(item.id)} />
                             {item.value} {''}  {!item.completed && (
-                                <button onClick={() => deleteItem(item.id)}>Delete</button>
+                                <button onClick={() => deleteItem(item.id)} type="button">Delete</button>
                             )}
                         </li>
                     )
