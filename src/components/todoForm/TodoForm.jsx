@@ -17,10 +17,16 @@ const ACTION = {
     VALUE: 'value',
 }
 
+const predefinedItems = [
+    { id: 1, value: 'Take out garbage' },
+    { id: 2, value: 'Do dishes' },
+    { id: 3, value: 'Sweep house' },
+    { id: 4, value: 'Clean room' },
+];
 
 export default function TodoForm() {
     const [state, dispatch] = useReducer(reducer, { value: "", })
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState(predefinedItems);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -33,7 +39,7 @@ export default function TodoForm() {
             value: state.value
         };
 
-        setItems(oldList => [ item, ...oldList]);
+        setItems(oldList => [item, ...oldList]);
         dispatch({ type: ACTION.VALUE, payload: '' });
 
         console.log(items);
@@ -54,11 +60,13 @@ export default function TodoForm() {
 
             <ul>
                 {items.map(item => {
-                    return(
-                <li key={item.id}>{item.value} <button onClick={() => deleteItem(item.id)}>Delete</button> </li>
+                    return (
+                        <li key={item.id}>
+                            <input type='checkbox' checked={item.completed} onChange={() => toggleCompletion(item.id)} />
+                            {item.value} <button onClick={() => deleteItem(item.id)}>Delete</button> </li>
                     )
                 })}
-                
+
             </ul>
         </form>
 
