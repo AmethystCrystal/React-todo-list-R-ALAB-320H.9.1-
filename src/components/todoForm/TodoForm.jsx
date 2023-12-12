@@ -5,11 +5,11 @@ import { useReducer } from 'react';
 
 const reducer = (state, action) => {
     switch (action.type) {
-        case 'value':
-            return { ...state, value: action.payload };
+        case 'title':
+            return { ...state, title: action.payload };
         case 'toggle_completion':
             return {...state,items: state.items.map(item =>
-                    item.id === action.payload ? { ...item, completed: !item.completed } : item)};
+                    item.userId === action.payload ? { ...item, completed: !item.completed } : item)};
         case 'delete':
             return {...state, items: action.payload};
         case 'add_item':
@@ -21,20 +21,20 @@ const reducer = (state, action) => {
 }
 
 const ACTION = {
-    VALUE: 'value',
+    TITLE: 'title',
     TOGGLE_COMPLETION: 'toggle_completion',
     ADD_ITEM: 'add_item',
 }
 
 const predefinedItems = [
-    { id: 1, value: 'Take out garbage', completed: false },
-    { id: 2, value: 'Do dishes', completed: false },
-    { id: 3, value: 'Sweep house', completed: false },
-    { id: 4, value: 'Clean room', completed: false },
+    { "userId": 1, title: 'Take out garbage', completed: false },
+    { "userId": 2, title: 'Do dishes', completed: false },
+    { "userId": 3, title: 'Sweep house', completed: false },
+    { "userId": 4, title: 'Clean room', completed: false },
 ];
 
 export default function TodoForm() {
-    const [state, dispatch] = useReducer(reducer, { value: "", items: predefinedItems })
+    const [state, dispatch] = useReducer(reducer, { title: "", items: predefinedItems })
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -43,23 +43,23 @@ export default function TodoForm() {
     const addItem = () => {
 
         const newItem = {
-            id: Math.floor(Math.random() * 1000),
-            value: state.value,
+            userId: Math.floor(Math.random() * 1000),
+            title: state.title,
             completed: false,
         };
 
-        dispatch({ type: ACTION.VALUE, payload: '' });
+        dispatch({ type: ACTION.TITLE, payload: '' });
         dispatch({ type: ACTION.ADD_ITEM, payload: newItem });
     }
 
-    const deleteItem = (id) => {
-        const newArray = state.items.filter(item => item.id !== id);
-        dispatch({ type: ACTION.VALUE, payload: '' });
+    const deleteItem = (userId) => {
+        const newArray = state.items.filter(item => item.userId !== userId);
+        dispatch({ type: ACTION.TITLE, payload: '' });
         dispatch({ type: 'delete', payload: newArray });
     }
 
-    const toggleCompletion = (id) => {
-        dispatch({ type: ACTION.TOGGLE_COMPLETION, payload: id });
+    const toggleCompletion = (userId) => {
+        dispatch({ type: ACTION.TOGGLE_COMPLETION, payload: userId });
     };
 
     return (
@@ -67,17 +67,17 @@ export default function TodoForm() {
         <form className='todo-Form' onSubmit={handleSubmit}>
             <h1>Todo List</h1><br></br>
             <input type='text' className='todo-input'
-                placeholder='Add a task!' value={state.value} onChange={(e) => dispatch({ type: ACTION.VALUE, payload: e.target.value })}></input>
+                placeholder='Add a task!' title={state.title} onChange={(e) => dispatch({ type: ACTION.title, payload: e.target.title })}></input>
             <button onClick={() => addItem()} type='submit' className='todo-btn'>Add Task</button>
 
             <ul>
                 {state.items.map((item) => {
                     return (
 
-                        <li key={item.id}>
-                            <input type='checkbox' checked={item.completed} onChange={() => toggleCompletion(item.id)} />
-                            {item.value} {''}  {!item.completed && (
-                                <button onClick={() => deleteItem(item.id)} type="button">Delete</button>
+                        <li key={item.userId}>
+                            <input type='checkbox' checked={item.completed} onChange={() => toggleCompletion(item.userId)} />
+                            {item.title} {''}  {!item.completed && (
+                                <button onClick={() => deleteItem(item.userId)} type="button">Delete</button>
                             )}
                         </li>
                     )
