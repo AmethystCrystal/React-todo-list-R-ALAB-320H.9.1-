@@ -1,5 +1,5 @@
 import React from 'react'
-import { useReducer } from 'react';
+import { useState, useReducer } from 'react';
 
 
 
@@ -24,21 +24,43 @@ const ACTION = {
     TITLE: 'title',
     TOGGLE_COMPLETION: 'toggle_completion',
     ADD_ITEM: 'add_item',
+    EDIT: 'edit',
 }
 
 const predefinedItems = [
     { "userId": 1, title: 'Take out garbage', completed: false },
     { "userId": 2, title: 'Do dishes', completed: false },
-    { "userId": 3, title: 'Sweep house', completed: false },
-    { "userId": 4, title: 'Clean room', completed: false },
+    { "userId": 3, title: 'Sweep house', completed: true },
+    { "userId": 4, title: 'Clean room', completed: true },
 ];
 
 export default function TodoForm() {
     const [state, dispatch] = useReducer(reducer, { title: "", items: predefinedItems })
 
+    const [editList, setEditList] = useState(null);
+    const [editedTitle, setEditedTitle] = useState('');
+    
+
+    const handleEditClick = (userId, title) => {
+        setEditList(userId);
+        setEditedTitle(title);
+    };
+
+    const handleSaveClick = () => {
+        if (editList !== null) {
+            editItem(editList, editedTitle);
+            setEditList(null);
+        }
+    };
+
+    const editItem = (userId, editedTitle) => {
+        dispatch({ type: 'edit', payload: { userId, editedTitle}});
+        setEditList(null);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-    }
+    };
 
     const addItem = () => {
 
@@ -50,13 +72,13 @@ export default function TodoForm() {
 
         dispatch({ type: ACTION.TITLE, payload: '' });
         dispatch({ type: ACTION.ADD_ITEM, payload: newItem });
-    }
+    };
 
     const deleteItem = (userId) => {
         const newArray = state.items.filter(item => item.userId !== userId);
         dispatch({ type: ACTION.TITLE, payload: '' });
         dispatch({ type: 'delete', payload: newArray });
-    }
+    };
 
     const toggleCompletion = (userId) => {
         dispatch({ type: ACTION.TOGGLE_COMPLETION, payload: userId });
@@ -67,29 +89,47 @@ export default function TodoForm() {
         <form className='todo-Form' onSubmit={handleSubmit}>
             <h1>Todo List</h1><br></br>
             <input type='text' className='todo-input'
-                placeholder='Add a task!' title={state.title} onChange={(e) => dispatch({ type: ACTION.title, payload: e.target.title })}></input>
+                placeholder='Add a task!' title={state.title} onChange={(e) => dispatch({ type: ACTION.TITLE, payload: e.target.value })}></input>
             <button onClick={() => addItem()} type='submit' className='todo-btn'>Add Task</button>
 
-            <ul>
-                {state.items.map((item) => {
-                    return (
+            <ol>
+      {state.items.map((item) => {
+        return (
+          <li key={item.userId}>
+            <input
+              type='checkbox'
+              checked={item.completed}
+              onChange={() => toggleCompletion(item.userId)}
+            />
 
-                        <li key={item.userId}>
-                            <input type='checkbox' checked={item.completed} onChange={() => toggleCompletion(item.userId)} />
-                            {item.title} {''}  {!item.completed && (
-                                <button onClick={() => deleteItem(item.userId)} type="button">Delete</button>
-                            )}
-                        </li>
-                    )
-                })}
-            </ul>
+            {editList === item.userId ? (
+              <>
+                <input
+                  type='text'
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                />
+                <button onClick={() => handleSaveClick()} type="button">
+                  Save
+                </button>
+              </>
+            ) : (
+              <>
+                {item.title}
+                {!item.completed && (
+                  <button onClick={() => deleteItem(item.userId)} type="button">
+                    Delete
+                  </button>
+                )}
+                <button onClick={() => handleEditClick(item.userId, item.title)} type="button">
+                  Edit
+                </button>
+              </>
+            )}
+          </li>
+        );
+      })}
+    </ol>
         </form>
-
-
     );
-
-
-
-}
-
-
+    }
