@@ -13,7 +13,10 @@ const reducer = (state, action) => {
         case 'delete':
             return {...state, items: action.payload};
         case 'add_item':
-            return {...state, items: [action.payload,...state.items ] }
+            return {...state, items: [action.payload,...state.items ] };
+        case 'edit': 
+            const { userId, editedTitle } = action.payload;
+            return { ...state, items: state.items.map(item => item.userId === userId ? {...item, title: editedTitle } : item)};
         default:
             throw new Error();
 
