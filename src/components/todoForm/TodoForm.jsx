@@ -95,7 +95,7 @@ export default function TodoForm() {
                 placeholder='Add a task!' title={state.title} onChange={(e) => dispatch({ type: ACTION.TITLE, payload: e.target.value })}></input>
             <button onClick={() => addItem()} type='submit' className='todo-btn'>Add Task</button>
 
-            <ol>
+            <ol style={{ listStyleType: 'none', padding: 0 }}>
       {state.items.map((item) => {
         return (
           <li key={item.userId}>
